@@ -92,8 +92,8 @@ In conclusion, TCP-Davis should help your service maintain lower latency under n
 
 <b>REFERENCES</b>
 
-TCP-Davis Paper - https://arxiv.org/pdf/2012.14996.pdf
-TCP-Davis Github - https://github.com/lambda-11235/tcp_davis
-TCP-BBR Google Announcement - https://cloud.google.com/blog/products/networking/tcp-bbr-congestion-control-comes-to-gcp-your-internet-just-got-faster
-Information about the bufferbloat effect - https://www.bufferbloat.net/projects/
-Other congestion control algorithms - https://en.wikipedia.org/wiki/TCP_congestion_control
+TCP-Davis Paper - https://arxiv.org/pdf/2012.14996.pdf</br>
+TCP-Davis Github - https://github.com/lambda-11235/tcp_davis</br>
+TCP-BBR Google Announcement - https://cloud.google.com/blog/products/networking/tcp-bbr-congestion-control-comes-to-gcp-your-internet-just-got-faster</br>
+Information about the bufferbloat effect - https://www.bufferbloat.net/projects/</br>
+Other congestion control algorithms - https://en.wikipedia.org/wiki/TCP_congestion_control</br>
