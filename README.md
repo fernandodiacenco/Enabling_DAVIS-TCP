@@ -21,66 +21,66 @@ You will need a Linux Kernel version higher than 5.4.x, trying to compile on 4.9
 
 In the next example I'm using Debian 10 as a base, the latest stable Debian version, Debian 11 was not released at the time of this writing
 
-Note: lines <b>in bold</b> are commands
+Note: lines  in bold are commands
 
 Install the new Kernel
 
-    <b>sudo nano /etc/sources.list</b>
+    sudo nano /etc/sources.list
 
     Include those lines at the end of the file, save and exit
     deb http://deb.debian.org/debian buster-backports main
     deb-src http://deb.debian.org/debian buster-backports main
 
-    <b>sudo apt update
+    sudo apt update
 
     sudo apt install -t buster-backports linux-image-amd64
 
-    sudo apt install linux-headers-$(uname -r)</b>
+    sudo apt install linux-headers-$(uname -r)
 
 Install TCP Davis
 
-    <b>sudo apt install git
+    sudo apt install git
     
     git clone https://github.com/lambda-11235/tcp_davis && cd tcp_davis
 
-    sudo make</b>
+    sudo make
     
 Load module into the Kernel
 
-    <b>sudo insmod tcp_davis.ko</b>
+    sudo insmod tcp_davis.ko
 
 Check if module is loaded
 
-    <b>sudo lsmod | grep davis</b>
+    sudo lsmod | grep davis
     
-    <b>sudo sysctl net.ipv4.tcp_congestion_control</b>
+    sudo sysctl net.ipv4.tcp_congestion_control
 
 If the module was loaded correctly, make the changes persistent
 
-    <b>sudo nano /etc/sysctl.conf</b>
+    sudo nano /etc/sysctl.conf
 
     Add this line at the end of the file, save and exit
     net.ipv4.tcp_congestion_control=davis
 
     Apply the new configuration
-    <b>sudo sysctl -p</b>
+    sudo sysctl -p
 
     Copy the module file from the git folder to system
-    <b>cp tcp_davis.ko /lib/modules/`uname -r`</b>
+    cp tcp_davis.ko /lib/modules/`uname -r`
 
     Enable module on startup
-    <b>sudo nano /etc/modules</b>
+    sudo nano /etc/modules
 	
     Add tcp_davis to the end of the file, save and exit
     tcp_davis
 
     Run depmod
-    <b>sudo depmod</b>
+    sudo depmod
     
 
 Now restart the system and check if TCP-Davis was loaded on startup
 
-    <b>sysctl net.ipv4.tcp_congestion_control</b>
+     sudo sysctl net.ipv4.tcp_congestion_control
 
 ---
 
