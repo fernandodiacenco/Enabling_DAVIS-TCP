@@ -9,7 +9,7 @@ I am of the opinion that the quality of experience should take precedence even t
 
 When the network is saturated, latency goes up, contributing to worse quality of experience 
 
-Congestion control algorithms are used to keep the service operating even under saturated network conditions (heavy load, etc), most of them focus on keeping the network efficient (achieving most throughput while trying to keep latency down), the most well known of the new alorithms is BBR, developed by Google, which google claims to have improved YouTube network throughput by 4% globally ony by virtue of adoption
+Congestion control algorithms are used to keep the service operating even under saturated network conditions (heavy load, etc), most of them focus on keeping the network efficient (achieving most throughput while trying to keep latency down), the most well known of the new algorithms is BBR, developed by Google, which google claims to have improved YouTube network throughput by 4% globally only by virtue of adoption
 
 DAVIS TCP uses the same principles applied on BBR, but focusing on keeping latency down, even to the detriment of throughput, which in my opinion does more in improving the quality of experience.
 
@@ -19,70 +19,74 @@ DAVIS TCP uses the same principles applied on BBR, but focusing on keeping laten
 
 You will need a Linux Kernel version higher than 5.4.x, trying to compile on 4.9.x (The previous LTS kernel before 5.4.x) will fail
 
-In the next example I'm using Debian 10 as a base, the latest stable Debian version, Debian 11 was not released yedt at the time of this writing
+In the next example I'm using Debian 10 as a base, the latest stable Debian version, Debian 11 was not released at the time of this writing
+
+Note: lines <b>in bold</b> are commands
 
 Install the new Kernel
 
-    sudo nano /etc/sources.list
+    <b>sudo nano /etc/sources.list</b>
 
     Include those lines at the end of the file, save and exit
     deb http://deb.debian.org/debian buster-backports main
     deb-src http://deb.debian.org/debian buster-backports main
 
-    sudo apt update
+    <b>sudo apt update
 
     sudo apt install -t buster-backports linux-image-amd64
 
-    sudo apt install linux-headers-$(uname -r)
+    sudo apt install linux-headers-$(uname -r)</b>
 
 Install TCP Davis
 
-    sudo apt install git
+    <b>sudo apt install git
     
     git clone https://github.com/lambda-11235/tcp_davis && cd tcp_davis
 
-    make
+    sudo make</b>
     
 Load module into the Kernel
 
-    insmod tcp_davis.ko
+    <b>sudo insmod tcp_davis.ko</b>
 
 Check if module is loaded
 
-    lsmod | grep davis
+    <b>sudo lsmod | grep davis</b>
     
-    sysctl net.ipv4.tcp_congestion_control
+    <b>sudo sysctl net.ipv4.tcp_congestion_control</b>
 
 If the module was loaded correctly, make the changes persistent
 
-    sudo nano /etc/sysctl.conf
+    <b>sudo nano /etc/sysctl.conf</b>
 
     Add this line at the end of the file, save and exit
     net.ipv4.tcp_congestion_control=davis
 
     Apply the new configuration
-    sudo sysctl -p
+    <b>sudo sysctl -p</b>
 
     Copy the module file from the git folder to system
-    cp tcp_davis.ko /lib/modules/`uname -r`
+    <b>cp tcp_davis.ko /lib/modules/`uname -r`</b>
 
     Enable module on startup
-    sudo nano /etc/modules
+    <b>sudo nano /etc/modules</b>
+	
     Add tcp_davis to the end of the file, save and exit
     tcp_davis
 
     Run depmod
-    sudo depmod
+    <b>sudo depmod</b>
     
 
 Now restart the system and check if TCP-Davis was loaded on startup
-    sysctl net.ipv4.tcp_congestion_control
+
+    <b>sysctl net.ipv4.tcp_congestion_control</b>
 
 ---
 
 <b>CONCLUSION</b>
 
-In conclusion, TCP-Davis should help your service maintain lower latency under network saturation, sppecially interesting for interactive services os services that are sensible to latency fluctuations, with the tradeoff that you spent troughtput to do so, which in my opinion is an excellent deal.
+In conclusion, TCP-Davis should help your service maintain lower latency under network saturation, specially interesting for interactive services or services that are sensible to latency fluctuations, with the trade off that you spent throughput to do so, which in my opinion is an excellent deal.
 
 ---
 
