@@ -21,11 +21,10 @@ You will need a Linux Kernel version higher than 5.4.x, trying to compile on 4.9
 
 In the next example I'm using Debian 10 as a base, the latest stable Debian version, Debian 11 was not released at the time of this writing
 
-Note: lines  in bold are commands
 
 Install the new Kernel
 
-    sudo nano /etc/sources.list
+    sudo nano /etc/apt/sources.list
 
     Include those lines at the end of the file, save and exit
     deb http://deb.debian.org/debian buster-backports main
@@ -33,27 +32,38 @@ Install the new Kernel
 
     sudo apt update
 
-    sudo apt install -t buster-backports linux-image-amd64
+    This will install the new kernel, the tools to compile the module, and git
+    sudo apt install -t buster-backports linux-image-amd64 build-essential git
 
-    sudo apt install linux-headers-$(uname -r)
+
+Restart to load the new Kernel
+
+    sudo shutdown -r now
+
+
+Now its necessary to install the kernel headers, needed to compile the module
+
+    sudo apt install linux-headers-`uname -r`
+
 
 Install TCP Davis
 
-    sudo apt install git
+    cd /usr/src && sudo git clone https://github.com/lambda-11235/tcp_davis && cd tcp_davis
     
-    git clone https://github.com/lambda-11235/tcp_davis && cd tcp_davis
+    sudo make -C "/usr/src/linux-headers-`uname -r`" M=/usr/src/tcp_davis modules
+    
+    This creates a file named tcp_davis.ko in the folder
 
-    sudo make
-    
+
 Load module into the Kernel
 
     sudo insmod tcp_davis.ko
 
+
 Check if module is loaded
 
     sudo lsmod | grep davis
-    
-    sudo sysctl net.ipv4.tcp_congestion_control
+
 
 If the module was loaded correctly, make the changes persistent
 
@@ -66,7 +76,7 @@ If the module was loaded correctly, make the changes persistent
     sudo sysctl -p
 
     Copy the module file from the git folder to system
-    cp tcp_davis.ko /lib/modules/`uname -r`
+    sudo cp tcp_davis.ko /lib/modules/`uname -r`
 
     Enable module on startup
     sudo nano /etc/modules
@@ -81,6 +91,14 @@ If the module was loaded correctly, make the changes persistent
 Now restart the system and check if TCP-Davis was loaded on startup
 
      sudo sysctl net.ipv4.tcp_congestion_control
+
+---
+
+<b>CLEANUP</b>
+
+Now you can if you want, recover some space by removing the packages used to compile the module, assuming that you wont need them in the future
+
+    sudo apt remove -y linux-headers-`uname -r` build-essential git && sudo apt autoremove -y && sudo apt autoclean -y && sudo rm -rf /usr/src/*
 
 ---
 
