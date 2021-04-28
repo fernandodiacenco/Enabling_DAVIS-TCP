@@ -1,6 +1,8 @@
 # Enabling_DAVIS-TCP
 A how-to on how to enable TCP-Davis on your Linux Server, an alternative to Google's BBR congestion control but focusing on low latency over throughput.
 
+---
+
 <b>INTRODUCTION</b>
 
 On network, a lower latency usually results in faster response times, and a faster response improves the quality of experience for the end users using the service you are providing
@@ -17,10 +19,12 @@ DAVIS TCP uses the same principles applied on BBR, but focusing on keeping laten
 
 <b>CONFIGURATION</b>
 
+Tested on Ubuntu 20.04.x and Debian 10
+
+
+<b>DEBIAN 10</b>
+
 You will need a Linux Kernel version higher than 5.4.x, trying to compile on 4.9.x (The previous LTS kernel before 5.4.x) will fail
-
-In the next example I'm using Debian 10 as a base, the latest stable Debian version, Debian 11 was not released at the time of this writing
-
 
 Install the new Kernel
 
@@ -92,13 +96,39 @@ Now restart the system and check if TCP-Davis was loaded on startup
 
      sudo sysctl net.ipv4.tcp_congestion_control
 
----
-
-<b>CLEANUP</b>
 
 Now you can if you want, recover some space by removing the packages used to compile the module, assuming that you wont need them in the future
 
     sudo apt remove -y linux-headers-`uname -r` build-essential git && sudo apt autoremove -y && sudo apt autoclean -y && sudo rm -rf /usr/src/*
+
+---
+
+<b>UBUNTU 20.04</b>
+
+Ubuntu comes with kernel 5.4.x, kernel headers and a lot of preinstalled packages so the only package you need to install is build-essential
+
+    sudo apt install build-essential
+    
+    cd /usr/src && sudo git clone https://github.com/lambda-11235/tcp_davis && cd tcp_davis
+    
+    sudo make -C "/usr/src/linux-headers-`uname -r`" M=/usr/src/tcp_davis modules
+    
+    sudo cp tcp_davis.ko /lib/modules/`uname -r`
+    
+    sudo depmod
+    
+    sudo nano /etc/modules
+    
+    add this line at the end and save
+    tcp_davis
+    
+    sudo nano /etc/sysctl.conf
+    
+    add this line at the end and save
+    net.ipv4.tcp_congestion_control=davis
+    
+    Now restart the system and check if TCP-Davis was loaded on startup
+    sudo sysctl net.ipv4.tcp_congestion_control
 
 ---
 
